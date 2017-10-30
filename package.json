@@ -1,0 +1,39 @@
+{
+  "name": "ngx-static-files-redirect-filter-proxy",
+  "version": "0.0.0",
+  "description": "",
+  "main": "",
+  "scripts": {
+    "build": "./node_modules/.bin/grunt build",
+    "watch": "./node_modules/.bin/grunt watch",
+    "clear": "./node_modules/.bin/grunt clear"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Srar/ngx-static-files-redirect-filter-proxy.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Srar/ngx-static-files-redirect-filter-proxy/issues"
+  },
+  "homepage": "https://github.com/Srar/ngx-static-files-redirect-filter-proxy#readme",
+  "devDependencies": {
+    "@types/body-parser": "^1.16.7",
+    "@types/express": "^4.0.39",
+    "@types/node": "^8.0.47",
+    "@types/request": "^2.0.7",
+    "grunt": "^1.0.1",
+    "grunt-cli": "^1.2.0",
+    "grunt-contrib-clean": "^1.1.0",
+    "grunt-contrib-copy": "^1.0.0",
+    "grunt-contrib-watch": "^1.0.0",
+    "grunt-ts": "^6.0.0-beta.17",
+    "typescript": "^2.5.3"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.2",
+    "request": "^2.83.0"
+  }
+}
