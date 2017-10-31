@@ -100,9 +100,7 @@ export default class LRUBufferCache {
         this.cacheUsedSpace += val.length;
         this.cacheHashContainer[key] = cache;
 
-        if(this.cacheUsedSpace > this.cacheElementsSpaceLimit) {
-            this.gc();
-        }
+        this.gc();
 
         return true;
     }
@@ -128,7 +126,7 @@ export default class LRUBufferCache {
         return this.cacheUsedSpace;
     }
 
-    setCacheElementsSpaceLimit(cacheElementsSpaceLimit: number): LRUCache {
+    setCacheElementsSpaceLimit(cacheElementsSpaceLimit: number): LRUBufferCache {
         if (cacheElementsSpaceLimit <= 0) {
             throw new Error("Invalid cache size for LRUCache.");
         }
