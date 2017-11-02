@@ -72,8 +72,9 @@ router.get("/:host/:uri", async function (req: express.Request, res: express.Res
         if(ext.indexOf("?") != -1) ext = ext.substring(0, ext.indexOf("?"));
 
         var filter = filtersRouter[ext];
-        if(filter != null) return new filter(cacheKey, null);
-        return new DefaultFilter(cacheKey, null);
+        if(filter == null) filter = DefaultFilter
+
+        return new filter(cacheKey, host, req, null);
     })();
 
    var cache: Buffer = bufferCache.get(cacheKey);
@@ -98,7 +99,7 @@ router.get("/:host/:uri", async function (req: express.Request, res: express.Res
         processingList[cacheKey] = 1;
         let response: IResponseData = null;
         try {
-            response = await tools.requestBuffer("http://" + host + uri, 1024 * 1024 * 5);
+            response = await tools.requestBuffer("http://" + host + uri, 1024 * 1024 * config.single_cache_limit);
             if(response.statusCode == 200) {
                 processedCache = await cacheFilter.onSourceResponseArrive(response, response.content);
             }

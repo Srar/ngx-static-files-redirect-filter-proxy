@@ -6,6 +6,8 @@ export default abstract class Filter {
 
     constructor (
         protected cacheKey: string,
+        protected sourceHost: string,
+        protected request: express.Request,
         protected filterConfig: any
     ) {
       
