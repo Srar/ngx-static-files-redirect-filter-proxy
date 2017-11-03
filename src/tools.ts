@@ -47,7 +47,6 @@ export default {
             response.on("end", () => resolve(returnData));
             response.on("error", function(err) {
                 response.removeAllListeners();
-                responseConnection.end();
                 reject(err);
             });
         });

@@ -71,7 +71,6 @@ router.all("/flush", function (req: express.Request, res: express.Response) {
             let host = new Buffer(match[3].substring(0, match[3].length - 1), "base64").toString(); 
             let uri = new Buffer(match[5], "base64").toString();
             let cacheKey: string = host + uri;
-            console.log(cacheKey);
             let cache: Buffer = bufferCache.get(cacheKey);
             if(cache == null) {
                 return "the resource has not been cache.";
@@ -105,7 +104,6 @@ router.get("/:host/:path/:uri", async function (req: express.Request, res: expre
     if (allowHosts[host] == undefined) return res.status(403).send("not allowed host.");
 
     var cacheKey: string = host + uri;
-    console.log(cacheKey);
     var cacheFilter: Filter = (function () {
         var ext: string = uri.substring(uri.lastIndexOf(".") + 1);
         /* example.com/123.css?a=1 */
@@ -118,7 +116,7 @@ router.get("/:host/:path/:uri", async function (req: express.Request, res: expre
     })();
 
     var cache: Buffer = bufferCache.get(cacheKey);
-
+    var sourceUrl: string = (config.source_https_protocol ? "https://" : "http://") + host + uri;
     var processedCache: IProcessedResponse = null;
 
     if (cache != null) {
@@ -127,6 +125,7 @@ router.get("/:host/:path/:uri", async function (req: express.Request, res: expre
         } catch (error) {
             res.status(503).send(`filter error.`);
             console.error(error);
+            return;
         }
         res.status(200)
             .contentType(processedCache.contentType)
@@ -139,7 +138,7 @@ router.get("/:host/:path/:uri", async function (req: express.Request, res: expre
         processingList[cacheKey] = 1;
         let response: IResponseData = null;
         try {
-            response = await tools.requestBuffer("http://" + host + uri, 1024 * 1024 * config.single_cache_limit);
+            response = await tools.requestBuffer(sourceUrl, 1024 * 1024 * config.single_cache_limit);
             if (response.statusCode == 200) {
                 processedCache = await cacheFilter.onSourceResponseArrive(response, response.content);
             }
@@ -147,6 +146,7 @@ router.get("/:host/:path/:uri", async function (req: express.Request, res: expre
             res.status(503).send(`remote server or Filter error.`);
             console.error(error);
             delete processingList[cacheKey];
+            return;
         }
 
         if (response.statusCode == 200) {
@@ -164,7 +164,7 @@ router.get("/:host/:path/:uri", async function (req: express.Request, res: expre
     }
 
     res.header({ "static-files-cache": "source" });
-    request("http://" + host + uri).pipe(res);
+    request(sourceUrl).pipe(res);
 });
 
 app.use('/', router);
