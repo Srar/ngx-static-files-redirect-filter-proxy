@@ -52,10 +52,6 @@ export default class CSSFilter extends Filter {
         var processedBuffer = Buffer.concat([
             new Buffer(4),
             Buffer.from(res.contentType, "utf-8"),
-<<<<<<< HEAD
-=======
-            Buffer.from("this is css file. \n", "utf-8"),
->>>>>>> 4f476a42c66f29eb090e0d72faf5c7ff58f4753b
             renderBuffer == null ? buffer : renderBuffer
         ]);
 
