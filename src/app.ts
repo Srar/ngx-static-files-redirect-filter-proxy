@@ -16,6 +16,7 @@ import config from "./config"
 import tools , { IResponseData } from "./tools"
 
 import CSSFilter                    from "./filters/CSSFilter"
+import ImageFilter                  from "./filters/ImageFilter"
 import DefaultFilter                from "./filters/DefaultFilter"
 import Filter, {IProcessedResponse} from "./filters/Filter"
 
@@ -30,7 +31,11 @@ for (var host of config.allow_hosts) allowHosts[host] = 1;
 var processingList: { [fullUrl: string]: number } = {};
 
 const filtersRouter = {
-    "css": CSSFilter,
+    "css" : CSSFilter,
+    "jpg" : ImageFilter,
+    "png" : ImageFilter,
+    "gif" : ImageFilter,
+    "jpeg": ImageFilter,
 }
 
 app.set("trust proxy", true);
@@ -74,7 +79,7 @@ router.get("/:host/:uri", async function (req: express.Request, res: express.Res
         var filter = filtersRouter[ext];
         if(filter == null) filter = DefaultFilter
 
-        return new filter(cacheKey, host, req, null);
+        return new filter(cacheKey, host, uri, req, null);
     })();
 
    var cache: Buffer = bufferCache.get(cacheKey);
@@ -89,9 +94,9 @@ router.get("/:host/:uri", async function (req: express.Request, res: express.Res
             console.error(error);
         }
         res.status(200)
-            .header({ "x-speed-cache": "hit" })
-            .contentType(processedCache.contentType)
-            .send(processedCache.content);
+           .contentType(processedCache.contentType)
+           .header({ "static-files-cache": "hit" })
+           .send(processedCache.content);
         return;
     }
 
@@ -104,15 +109,15 @@ router.get("/:host/:uri", async function (req: express.Request, res: express.Res
                 processedCache = await cacheFilter.onSourceResponseArrive(response, response.content);
             }
         } catch (error) {
-            res.status(503).send(`remote server error.`);
+            res.status(503).send(`remote server or Filter error.`);
             console.error(error);
             delete processingList[cacheKey];
         }
 
         if(response.statusCode == 200) {
             res.status(response.statusCode)
-               .header({ "x-speed-cache": "miss" })
                .contentType(processedCache.contentType)
+               .header({ "static-files-cache": "miss" })
                .send(processedCache.content);
             bufferCache.put(cacheKey, processedCache.processedContent);
         } else {
@@ -123,7 +128,7 @@ router.get("/:host/:uri", async function (req: express.Request, res: express.Res
         return;
    }
 
-    res.header({ "x-speed-cache": "source" });
+    res.header({ "static-files-cache": "source" });
     request("http://" + host + uri).pipe(res);
 });
 
