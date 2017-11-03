@@ -61,8 +61,9 @@ router.get("/status", function (req: express.Request, res: express.Response) {
     `);
 });
 
-router.get("/:host/:uri", async function (req: express.Request, res: express.Response) {
+router.get("/:host/:path/:uri", async function (req: express.Request, res: express.Response) {
     var uri: string = req.params["uri"];
+    var path: string = req.params["path"];
     var host: string = req.params["host"];
 
     uri = new Buffer(uri, "base64").toString();
@@ -79,7 +80,7 @@ router.get("/:host/:uri", async function (req: express.Request, res: express.Res
         var filter = filtersRouter[ext];
         if(filter == null) filter = DefaultFilter
 
-        return new filter(cacheKey, host, uri, req, null);
+        return new filter(cacheKey, host, path, uri, req, config);
     })();
 
    var cache: Buffer = bufferCache.get(cacheKey);
