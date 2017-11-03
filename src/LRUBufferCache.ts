@@ -105,6 +105,33 @@ export default class LRUBufferCache {
         return true;
     }
 
+    public remove(key: string) {
+        var cache = this.cacheHashContainer[key];
+        if(cache == undefined) return;
+
+        this.cacheCounter--;
+        this.cacheUsedSpace -= cache.getValue().length;
+        delete this.cacheHashContainer[key];
+
+        if(this.cacheCounter == 0) {
+            this.firstCache = null;
+            this.lastCache  = null;
+        }
+
+        if(cache.isFirstNode()) {
+            this.firstCache = cache.getNextNode();
+            return;
+        }
+
+        if(cache.isLastNode()) {
+            this.lastCache = cache.getLastNode();
+            return;
+        }
+
+        cache.getLastNode().setNextNode(cache.getNextNode());
+        cache.getNextNode().setLastNode(cache.getLastNode());
+    }
+
     gc() {
         if(!(this.cacheUsedSpace > this.cacheElementsSpaceLimit)) return;
         var lastCache = this.lastCache;
