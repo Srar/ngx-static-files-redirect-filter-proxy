@@ -3,6 +3,7 @@
     "allow_hosts": [
         "127.0.0.1:3000"
     ],
+    "redirect_domain": "http://127.0.0.1:5000/",
     "cache_space_limit": 128,
     "single_cache_limit": 5
 }
