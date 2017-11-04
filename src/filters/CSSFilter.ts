@@ -104,6 +104,19 @@ export default class CSSFilter extends Filter {
                     result.uri = new Buffer(path.substring(0, path.lastIndexOf("/") + 1) + tag_url.substring(2)).toString("base64");
                     return result;
                 }
+
+                /* <img src="../public/imgs/header.jpg"> or <img src="../../public/imgs/header.jpg"> */
+                if(tag_url[0] == "." && tag_url[1] == "." && tag_url[2] == "/") {
+                    var temp_path = this.sourceUri.substring(0, this.sourceUri.lastIndexOf("/"));
+                    var temp_uri  = tag_url;
+                    while(temp_uri[0] == "." && temp_uri[1] == "." && temp_uri[2] == "/") {
+                        temp_path = temp_path.substring(0, temp_path.lastIndexOf("/"));
+                        temp_uri = temp_uri.substring(3);
+                    }
+                    result.uri = new Buffer(temp_path + "/" + temp_uri).toString("base64");
+                    return result; 
+                }
+
             }
 
             /* skip <script src="//cdn.staticfile.org/jquery/2.2.1/jquery.min.js"></script>  */
