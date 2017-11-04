@@ -1,10 +1,9 @@
 {
     "service_port": 5000,
     "allow_hosts": [
-        "127.0.0.1:3000"
+        { "host": "127.0.0.1:3000", "https": false }
     ],
     "redirect_domain": "http://127.0.0.1:5000/",
     "cache_space_limit": 128,
-    "single_cache_limit": 5,
-    "source_https_protocol": false
+    "single_cache_limit": 5
 }

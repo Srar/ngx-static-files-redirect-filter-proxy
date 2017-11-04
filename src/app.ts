@@ -25,8 +25,9 @@ const router: express.Router = express.Router();
 const config: config = JSON.parse(fs.readFileSync("./config.json").toString());
 const bufferCache: LRUBufferCache = new LRUBufferCache(config.cache_space_limit * 1024 * 1024);
 
-var allowHosts: { [host: string]: number } = {};
-for (var host of config.allow_hosts) allowHosts[host] = 1;
+var allowHosts: { [host: string]: boolean } = {};
+for (var host of config.allow_hosts) 
+    allowHosts[host.host] = host.https;
 
 var processingList: { [fullUrl: string]: number } = {};
 
@@ -116,8 +117,13 @@ router.get("/:host/:path/:uri", async function (req: express.Request, res: expre
     })();
 
     var cache: Buffer = bufferCache.get(cacheKey);
-    var sourceUrl: string = (config.source_https_protocol ? "https://" : "http://") + host + uri;
+    var sourceUrl: string = (allowHosts[host] ? "https://" : "http://") + host
+    if(host[host.length - 1] != "/" && uri[0] != "/") sourceUrl += "/";
+    sourceUrl += uri;
+
     var processedCache: IProcessedResponse = null;
+
+    res.header({"Access-Control-Allow-Origin": "*"});
 
     if (cache != null) {
         try {
