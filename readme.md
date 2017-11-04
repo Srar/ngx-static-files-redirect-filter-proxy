@@ -11,15 +11,17 @@
 ## 配置文件
 
 ```json
-{	
-    "service_port": 5000,
+{
+    "service_port": 8443,
     "allow_hosts": [
-        "127.0.0.1:3000"
+        {
+            "host": "example.com",
+            "https": true
+        }
     ],
-    "redirect_domain": "http://127.0.0.1:5000/",
-    "cache_space_limit": 128,
-    "single_cache_limit": 5,
-    "source_https_protocol": false
+    "redirect_domain": "https://static.example.com:8443/",
+    "cache_space_limit": 300,
+    "single_cache_limit": 5
 }
 ```
 
@@ -53,7 +55,7 @@ server {
         static_redirect_base64_src_host                 on;
         static_redirect_base64_src_url                  on;
         static_redirect_base64_src_requesting_path      on;
-        static_redirect_split_tag                       "/";
+        static_redirect_split_tag                       ":";
     }
 }
 ```

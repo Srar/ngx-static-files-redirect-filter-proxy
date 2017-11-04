@@ -26,7 +26,7 @@ const config: config = JSON.parse(fs.readFileSync("./config.json").toString());
 const bufferCache: LRUBufferCache = new LRUBufferCache(config.cache_space_limit * 1024 * 1024);
 
 var allowHosts: { [host: string]: boolean } = {};
-for (var host of config.allow_hosts) 
+for (var host of config.allow_hosts)
     allowHosts[host.host] = host.https;
 
 var processingList: { [fullUrl: string]: number } = {};
@@ -69,11 +69,11 @@ router.all("/flush", function (req: express.Request, res: express.Response) {
             let regexp = new RegExp(/(http:\/\/|https:\/\/)(.*?\/)(.*?\/)(.*?\/)(.*)/);
             let match = regexp.exec(url);
             if (match == null || match[3] == undefined || match[5] == undefined) return "invalid url";
-            let host = new Buffer(match[3].substring(0, match[3].length - 1), "base64").toString(); 
+            let host = new Buffer(match[3].substring(0, match[3].length - 1), "base64").toString();
             let uri = new Buffer(match[5], "base64").toString();
             let cacheKey: string = host + uri;
             let cache: Buffer = bufferCache.get(cacheKey);
-            if(cache == null) {
+            if (cache == null) {
                 return "the resource has not been cache.";
             }
             bufferCache.remove(cacheKey);
@@ -94,13 +94,19 @@ router.all("/flush", function (req: express.Request, res: express.Response) {
     `);
 });
 
-router.get("/:host/:path/:uri", async function (req: express.Request, res: express.Response) {
-    var uri: string = req.params["uri"];
-    var path: string = req.params["path"];
-    var host: string = req.params["host"];
+router.get("/", async function (req: express.Request, res: express.Response) {
+    var fullUrlArray: Array<string> = (req.query["url"] || "").split(":");
+    if(fullUrlArray.length != 3) {
+        return res.status(403).send("invalid url.");
+    }
+
+    var host: string = fullUrlArray[0];
+    var path: string = fullUrlArray[1];
+    var uri: string = fullUrlArray[2];
 
     uri = new Buffer(uri, "base64").toString();
     host = new Buffer(host, "base64").toString();
+    path = new Buffer(path, "base64").toString();
 
     if (allowHosts[host] == undefined) return res.status(403).send("not allowed host.");
 
@@ -118,12 +124,12 @@ router.get("/:host/:path/:uri", async function (req: express.Request, res: expre
 
     var cache: Buffer = bufferCache.get(cacheKey);
     var sourceUrl: string = (allowHosts[host] ? "https://" : "http://") + host
-    if(host[host.length - 1] != "/" && uri[0] != "/") sourceUrl += "/";
+    if (host[host.length - 1] != "/" && uri[0] != "/") sourceUrl += "/";
     sourceUrl += uri;
 
     var processedCache: IProcessedResponse = null;
 
-    res.header({"Access-Control-Allow-Origin": "*"});
+    res.header({ "Access-Control-Allow-Origin": "*" });
 
     if (cache != null) {
         try {

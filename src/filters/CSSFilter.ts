@@ -77,13 +77,15 @@ export default class CSSFilter extends Filter {
 
     private formathIRedirectResult(i: IRedirectResult): string {
         var newHost: string = this.filterConfig["redirect_domain"] || "";
-        return `${newHost}${i.host}/${i.path}/${i.uri}`;
+        return `${newHost}?url=${i.host}:${i.path}:${i.uri}`;
     }
 
     /* From https://github.com/Srar/ngx-static-files-redirect-filter/blob/master/ngx_static_files_redirect_tag_tools.c#L35 */
     private redirectStaticFile(tag_url: string): IRedirectResult {
+        var uri = this.sourceUri;
         var host = this.sourceHost;
         var path = this.sourceRequestPath;
+
         var is_front_http: boolean = false;
         var is_front_https: boolean = false;
         is_front_http = this.checkFrontProtocol("http://", tag_url);
@@ -99,19 +101,19 @@ export default class CSSFilter extends Filter {
             if (tag_url[0] != '/') {
                 /* <img src="public/imgs/header.jpg"> */
                 if (tag_url[0] != '.' && tag_url[1] != '/') {
-                    result.uri = new Buffer(path.substring(0, path.lastIndexOf("/") + 1) + tag_url).toString("base64");
+                    result.uri = new Buffer(uri.substring(0, uri.lastIndexOf("/") + 1) + tag_url).toString("base64");
                     return result;
                 }
 
                 /* <img src="./public/imgs/header.jpg"> */
                 if (tag_url[0] == '.' && tag_url[1] == '/') {
-                    result.uri = new Buffer(path.substring(0, path.lastIndexOf("/") + 1) + tag_url.substring(2)).toString("base64");
+                    result.uri = new Buffer(uri.substring(0, uri.lastIndexOf("/") + 1) + tag_url.substring(2)).toString("base64");
                     return result;
                 }
 
                 /* <img src="../public/imgs/header.jpg"> or <img src="../../public/imgs/header.jpg"> */
                 if(tag_url[0] == "." && tag_url[1] == "." && tag_url[2] == "/") {
-                    var temp_path = this.sourceUri.substring(0, this.sourceUri.lastIndexOf("/"));
+                    var temp_path = uri.substring(0, uri.lastIndexOf("/"));
                     var temp_uri  = tag_url;
                     while(temp_uri[0] == "." && temp_uri[1] == "." && temp_uri[2] == "/") {
                         temp_path = temp_path.substring(0, temp_path.lastIndexOf("/"));
