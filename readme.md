@@ -49,7 +49,7 @@ server {
         proxy_pass                                      http://example.com/;
         proxy_set_header                                Host "example.com";
         static_redirect                                 on;
-        static_redirect_new_host                        "http://127.0.0.1:5000/";
+        static_redirect_new_host                        "https://static.example.com:8443/?url=";
         static_redirect_new_host_ramdom                 0 1;
         static_redirect_take_src_requesting_path        on;
         static_redirect_base64_src_host                 on;
