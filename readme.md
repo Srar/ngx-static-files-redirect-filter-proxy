@@ -58,3 +58,15 @@ server {
 }
 ```
 
+## 操作 - 刷新缓存
+
+浏览器中访问: `http://ip:port/flush`. 将已重写的URL填入文本框点击`flush`按钮.
+
+## 操作 - 缓存概况
+
+浏览器中访问: `http://ip:port/status`.
+
+* `total`: 缓存总大小上限.
+* `used`: 已使用的缓存大小.
+* `free`: 可使用的缓存大小.
+* `elements count`: 已缓存的资源数量.
