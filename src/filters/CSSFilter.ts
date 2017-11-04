@@ -21,16 +21,20 @@ export default class CSSFilter extends Filter {
 
     public async onSourceResponseArrive(res: IResponseData, buffer: Buffer): Promise<IProcessedResponse> {
 
-        var regexp = new RegExp(/url\(\"{0,1}(.*?)\"{0,1}\)/g);
+        var regexp = new RegExp(/url\((\'\")?(.*?)(\'\")?\)/g);
         var match: RegExpExecArray, matches: Array<IRegexpMatchsStruct> = [];
 
         while ((match = regexp.exec(buffer.toString())) != null) {
-            let IRedirectResult = this.redirectStaticFile(match[1]);
+            let url = match[2];
+            if(url[0] == "'" || url[0] == "\"") url = url.substring(1);
+            if(url[url.length - 1] == "'" || url[url.length - 1] == "\"") url = url.substring(0, url.length - 1);
+            
+            let IRedirectResult = this.redirectStaticFile(url);
             if(IRedirectResult == null) continue;
             matches.push({
                 start: match.index,
                 end: regexp.lastIndex,
-                url: match[1],
+                url: url,
                 new_url: this.formathIRedirectResult(IRedirectResult)
             });
         }
