@@ -3,6 +3,7 @@
     "allow_hosts": [
         { "host": "127.0.0.1:3000", "https": false }
     ],
+    "accept_unauthorized_cert": false,
     "redirect_domain": "http://127.0.0.1:5000/",
     "cache_space_limit": 128,
     "single_cache_limit": 5

@@ -25,6 +25,8 @@ const router: express.Router = express.Router();
 const config: config = JSON.parse(fs.readFileSync("./config.json").toString());
 const bufferCache: LRUBufferCache = new LRUBufferCache(config.cache_space_limit * 1024 * 1024);
 
+if(config.accept_unauthorized_cert) process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+
 var allowHosts: { [host: string]: boolean } = {};
 for (var host of config.allow_hosts)
     allowHosts[host.host] = host.https;
