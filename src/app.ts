@@ -16,7 +16,7 @@ import config from "./config"
 import tools, { IResponseData } from "./tools"
 
 import CSSFilter from "./filters/CSSFilter"
-import ImageFilter from "./filters/ImageFilter"
+// import ImageFilter from "./filters/ImageFilter"
 import DefaultFilter from "./filters/DefaultFilter"
 import Filter, { IProcessedResponse } from "./filters/Filter"
 
@@ -33,10 +33,10 @@ var processingList: { [fullUrl: string]: number } = {};
 
 const filtersRouter = {
     "css": CSSFilter,
-    "jpg": ImageFilter,
-    "png": ImageFilter,
-    "gif": ImageFilter,
-    "jpeg": ImageFilter,
+    // "jpg": ImageFilter,
+    // "png": ImageFilter,
+    // "gif": ImageFilter,
+    // "jpeg": ImageFilter,
 }
 
 app.set("trust proxy", true);
@@ -177,6 +177,10 @@ router.get("/", async function (req: express.Request, res: express.Response) {
 
     res.header({ "static-files-cache": "source" });
     request(sourceUrl).pipe(res);
+
+    var stream = request(sourceUrl);
+    stream.on("error", (err) => {});
+    stream.pipe(res);
 });
 
 app.use('/', router);
