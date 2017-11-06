@@ -19,6 +19,7 @@
             "https": true
         }
     ],
+    "accept_unauthorized_cert": false,
     "redirect_domain": "https://static.example.com:8443/",
     "cache_space_limit": 300,
     "single_cache_limit": 5
@@ -30,7 +31,7 @@
 * `redirect_domain`: 当前服务所绑定的域名, 如有多个请选定一个.
 * `cache_space_limit`: 内存缓存大小上限. 单位MB.
 * `single_cache_limit`: 单个资源大小最大上限. 单位MB.
-* `source_https_protocol`: 源站是否使用了HTTPS.
+* `accept_unauthorized_cert`: 是否接受证书验证错误的请求.
 
 ## Nginx配置
 

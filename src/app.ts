@@ -25,7 +25,7 @@ const router: express.Router = express.Router();
 const config: config = JSON.parse(fs.readFileSync("./config.json").toString());
 const bufferCache: LRUBufferCache = new LRUBufferCache(config.cache_space_limit * 1024 * 1024);
 
-if(config.accept_unauthorized_cert) process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
+if (config.accept_unauthorized_cert) process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 var allowHosts: { [host: string]: boolean } = {};
 for (var host of config.allow_hosts)
@@ -98,7 +98,7 @@ router.all("/flush", function (req: express.Request, res: express.Response) {
 
 router.get("/", async function (req: express.Request, res: express.Response) {
     var fullUrlArray: Array<string> = (req.query["url"] || "").split(":");
-    if(fullUrlArray.length != 3) {
+    if (fullUrlArray.length != 3) {
         return res.status(403).send("invalid url.");
     }
 
@@ -178,10 +178,9 @@ router.get("/", async function (req: express.Request, res: express.Response) {
     }
 
     res.header({ "static-files-cache": "source" });
-    request(sourceUrl).pipe(res);
 
     var stream = request(sourceUrl);
-    stream.on("error", (err) => {});
+    stream.on("error", console.error);
     stream.pipe(res);
 });
 
