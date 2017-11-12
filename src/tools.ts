@@ -13,7 +13,7 @@ export default {
         var bufsChain: Array<Buffer> = [];
         var responseConnection: net.Socket = null;
         return new Promise((resolve, reject) => {
-            var response: request.Request = request.get(url);
+            var response: request.Request = request.get(url, { timeout: 15 * 1000 });
             response.on("response", function (response) {
                 returnData.statusCode = response.statusCode;
                 returnData.contentType = <string>response.headers["content-type"];
@@ -31,7 +31,7 @@ export default {
                 returnData.content = Buffer.concat(bufsChain, bufsSize);
                 resolve(returnData);
             });
-            response.on("error", function(err) {
+            response.on("error", function (err) {
                 response.removeAllListeners();
                 reject(err);
             });

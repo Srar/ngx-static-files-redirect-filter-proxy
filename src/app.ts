@@ -16,7 +16,7 @@ import config from "./config"
 import tools, { IResponseData } from "./tools"
 
 import CSSFilter from "./filters/CSSFilter"
-// import ImageFilter from "./filters/ImageFilter"
+import ImageFilter from "./filters/ImageFilter"
 import DefaultFilter from "./filters/DefaultFilter"
 import Filter, { IProcessedResponse } from "./filters/Filter"
 
@@ -35,10 +35,9 @@ var processingList: { [fullUrl: string]: number } = {};
 
 const filtersRouter = {
     "css": CSSFilter,
-    // "jpg": ImageFilter,
-    // "png": ImageFilter,
-    // "gif": ImageFilter,
-    // "jpeg": ImageFilter,
+    "jpg": ImageFilter,
+    "png": ImageFilter,
+    "jpeg": ImageFilter,
 }
 
 app.set("trust proxy", true);

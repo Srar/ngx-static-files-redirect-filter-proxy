@@ -1,10 +1,21 @@
-import * as sharp from "sharp"
+import * as twebp from "twebp"
 import * as express from "express"
 import LRUBufferCache from "../LRUBufferCache"
 import tools, { IResponseData } from "../tools"
 import Filter, { IProcessedResponse } from "./Filter"
 
+import { WebPEncodeOptions } from "twebp"
+
 const HEADER_SIZE: number = 8;
+
+function N_WebPEncodeAsyncPromise(buf: Buffer, options: WebPEncodeOptions): Promise<Buffer> {
+    return new Promise(function (resolve, reject) {
+        twebp.N_WebPEncodeAsync(buf, options, function (err, webp) {
+            if (err) return reject(err);
+            resolve(webp);
+        });
+    });
+}
 
 export default class ImageFilter extends Filter {
 
@@ -23,7 +34,11 @@ export default class ImageFilter extends Filter {
 
     public async onSourceResponseArrive(res: IResponseData, buffer: Buffer): Promise<IProcessedResponse> {
 
-        var webpBuffer: Buffer = await sharp(buffer).webp().toBuffer();
+        var webpBuffer: Buffer = await N_WebPEncodeAsyncPromise(buffer, {
+            quality: 80,
+            thread_level: 1,
+        })
+
         var isSupportWebP: boolean = this.isClientSupportWebP();
 
         var processedBuffer = Buffer.concat([
@@ -81,5 +96,5 @@ export default class ImageFilter extends Filter {
     private isClientSupportWebP(): boolean {
         return (this.request.headers["accept"] != undefined && this.request.headers["accept"].indexOf("webp") != -1);
     }
-    
+
 }

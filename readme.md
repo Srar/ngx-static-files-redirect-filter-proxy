@@ -6,7 +6,17 @@
 
 * LRU内存缓存
 * CSS内引用资源重定向
-* 图片自动转码为WebP并发送给支持的浏览器(由于v8 GC导致内存问题暂时禁用)
+* 图片自动转码为WebP并发送给支持的浏览器
+
+## 安装
+### CentOS7
+```
+yum install libpng-devel libjpeg-turbo-devel libwebp-devel -y
+```
+### macOS
+```
+brew install webp libpng jpeg
+```
 
 ## 配置文件
 
