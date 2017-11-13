@@ -67,11 +67,11 @@ router.all("/flush", function (req: express.Request, res: express.Response) {
         message = (function () {
             let url: string = req.body["url"] || "";
             if (url == "") return "invalid url";
-            let regexp = new RegExp(/(http:\/\/|https:\/\/)(.*?\/)(.*?\/)(.*?\/)(.*)/);
+            let regexp = new RegExp(/.*\?url=(.*):(.*):(.*)/);
             let match = regexp.exec(url);
-            if (match == null || match[3] == undefined || match[5] == undefined) return "invalid url";
-            let host = new Buffer(match[3].substring(0, match[3].length - 1), "base64").toString();
-            let uri = new Buffer(match[5], "base64").toString();
+            if (match == null || match[1] == undefined || match[3] == undefined) return "invalid url";
+            let host = new Buffer(match[1].substring(0, match[3].length - 1), "base64").toString();
+            let uri = new Buffer(match[3], "base64").toString();
             let cacheKey: string = host + uri;
             let cache: Buffer = bufferCache.get(cacheKey);
             if (cache == null) {
@@ -188,3 +188,13 @@ app.use('/', router);
 app.listen(config.service_port, function () {
     console.log("http service listen port at", config.service_port);
 });
+
+setInterval(function() {
+    if(global["gc"] != undefined) {
+        global.gc();
+    }
+}, 5 * 60 * 1000);
+
+if(global["gc"] == undefined) {
+    console.info("Recommend adding '--expose-gc' to arguments.");
+}
